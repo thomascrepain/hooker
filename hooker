@@ -1,0 +1,38 @@
+#!/bin/sh
+# Colors
+ERROR='\033[0;31m'
+WARNING='\033[0;33m'
+INFO='\033[0;32m'
+NC='\033[0m' # No Color
+# Bootstrap
+shopt -s nullglob
+me=$1
+
+echo -e "${INFO}Git hook $me...${NC}"
+
+# Get scripts to run
+scriptsToRun=(${0%/*}/"$me"-scripts/*)
+scriptsToRun=($(printf '%s\n' "${scriptsToRun[@]}"|sort -V))
+
+# Run every script
+for SCRIPT in "${scriptsToRun[@]}"
+do
+	if [ -f $SCRIPT -a -x $SCRIPT ]
+	then
+		NAME=$(basename $SCRIPT)
+		echo -e "${INFO}Run script '$NAME'...${NC}"
+		$SCRIPT "$@"
+		
+		if [ $? != 0 ]
+		then 
+			echo -e "${ERROR}Aborted while running '$NAME'${NC}" >&2
+			exit 1;
+		else
+			echo -e "${INFO}Run script '$NAME'...done${NC}"
+		fi
+	fi
+done
+
+# Finished
+echo -e "${INFO}Git hook $me...done${NC}"
+exit 0;

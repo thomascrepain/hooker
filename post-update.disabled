@@ -1,0 +1,4 @@
+#!/bin/sh
+#
+# To enable this hook, rename this file to "post-update".
+${0%/*}/hooker post-update "$@"

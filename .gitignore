@@ -1,0 +1,9 @@
+applypatch-msg
+pre-push
+commit-msg
+pre-rebase
+post-update
+prepare-commit-msg
+pre-applypatch
+update
+pre-commit
