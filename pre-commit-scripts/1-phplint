@@ -1,0 +1,10 @@
+#!/bin/sh
+
+git diff-index --diff-filter=ACMR --name-only --cached HEAD |
+	grep '.php$' |
+    xargs -tn1 php -l
+
+if (( $? )); 
+then
+    exit 1
+fi
