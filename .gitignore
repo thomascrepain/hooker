@@ -7,3 +7,4 @@ prepare-commit-msg
 pre-applypatch
 update
 pre-commit
+/vendor/

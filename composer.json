@@ -1,0 +1,14 @@
+{
+    "name": "thomascrepain/hooker",
+    "description": "A set of git hooks I use on PHP projects",
+    "require": {
+        "squizlabs/php_codesniffer": "dev-master"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Thomas Crepain",
+            "email": "thomas.crepain@studioemma.eu"
+        }
+    ]
+}
