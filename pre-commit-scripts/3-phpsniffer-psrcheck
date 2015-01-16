@@ -36,7 +36,7 @@ if [ ! -x $PHPCS_BIN ]; then
 fi
 
 # stolen from template file
-if git rev-parse --verify HEAD
+if git rev-parse --verify HEAD >/dev/null
 then
     against=HEAD
 else
