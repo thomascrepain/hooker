@@ -1,0 +1,73 @@
+#!/bin/sh
+#
+# Check for debugging statements before commiting your code.
+# See original: https://coderwall.com/p/soe1na/never-forget-to-remove-your-debugging-statements-with-git-hooks
+#
+# This is a pre-commit hook.
+
+# Config
+#
+# List of function names to search for in regex format
+FUNCTIONS='Zend_Debug::dump|die|exit|console.log'
+# Temp staging folder
+TMP_STAGING=".tmp_staging"
+
+# stolen from template file
+if git rev-parse --verify HEAD
+then
+    against=HEAD
+else
+    # Initial commit: diff against an empty tree object
+    against=4b825dc642cb6eb9a060e54bf8d69288fbee4904
+fi
+
+# this is the magic: 
+# retrieve all files in staging area that are added, modified or renamed
+# but no deletions etc
+FILES=$(git diff-index --name-only --cached --diff-filter=ACMR $against -- )
+
+if [ "$FILES" == "" ]; then
+    exit 0
+fi
+
+# create temporary copy of staging area
+if [ -e $TMP_STAGING ]; then
+    rm -rf $TMP_STAGING
+fi
+mkdir $TMP_STAGING
+
+# Copy contents of staged version of files to temporary staging area
+# because we only want the staged version that will be commited and not
+# the version in the working directory
+STAGED_FILES=""
+for FILE in $FILES
+do
+  ID=$(git diff-index --cached HEAD $FILE | cut -d " " -f4)
+
+  # create staged version of file in temporary staging area with the same
+  # path as the original file so that the phpcs ignore filters can be applied
+  mkdir -p "$TMP_STAGING/$(dirname $FILE)"
+  git cat-file blob $ID > "$TMP_STAGING/$FILE"
+  STAGED_FILES="$STAGED_FILES $TMP_STAGING/$FILE"
+done
+
+# Check for the illegal functions
+RES=`egrep -nr ";?\b*($FUNCTIONS)\(.*\)" $TMP_STAGING`
+
+# delete temporary copy of staging area
+rm -rf $TMP_STAGING
+
+if [[ -n "$RES" ]]; then
+  echo -e "\n${RES#$TMP_STAGING/}"
+  echo -e "\nFound possible debugging functions in the code!"
+
+  read -r -p "Abort commit? [Y/n] " response </dev/tty
+	if [[ $response =~ ^([Nn][Oo]|[Nn])$ ]]
+	then
+		exit 0;
+	else 
+		exit 1;
+	fi
+fi
+
+exit 0;
