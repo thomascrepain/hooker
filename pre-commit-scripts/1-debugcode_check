@@ -8,7 +8,7 @@
 # Config
 #
 # List of function names to search for in regex format
-FUNCTIONS='Zend_Debug::dump|die|exit|console.log'
+FUNCTIONS='Zend_Debug::dump|var_dump|die|exit|console.log'
 # Temp staging folder
 TMP_STAGING=".tmp_staging"
 
